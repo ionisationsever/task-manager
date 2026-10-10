@@ -98,10 +98,12 @@ async def root():
 
 @app.get("/tasks", response_model=List[Task])
 async def get_tasks():
+    # Получение списка заданий (get tasks)
     return list(tasks_db.values())
 
 @app.post("/tasks", response_model=Task, status_code=status.HTTP_201_CREATED)
 async def create_task(task: TaskCreate):
+    # Создание нового задания (create task)
     task_id = str(uuid.uuid4())
     current_time = datetime.now()
     
@@ -117,10 +119,12 @@ async def create_task(task: TaskCreate):
 
 @app.get("/tasks/{task_id}", response_model=Task)
 async def get_task(task_id: str):
+    # Получение задания, конкретного (get task)
     return get_task_or_404(task_id)
 
 @app.put("/tasks/{task_id}", response_model=Task)
 async def update_task(task_id: str, task_update: TaskCreate):
+    # Обновление заданий (update task)
     task = get_task_or_404(task_id)
     
     task_data = task_update.dict()
@@ -136,13 +140,15 @@ async def update_task(task_id: str, task_update: TaskCreate):
 
 @app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(task_id: str):
-    # Добавить код метода
-
+    # Удалить задание (delete task)
+    get_task_or_404(task_id)  # Проверить, существует ли задача
+    del tasks_db[task_id]
     return None
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
+    # Проверка жизнеспособности кода (health check)
     return {"status": "healthy"}
 
 if __name__ == "__main__":
